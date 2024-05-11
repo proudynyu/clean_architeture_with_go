@@ -1,37 +1,27 @@
 package controllers
 
-import "github.com/proudynyu/clean_arch_go/utils"
+import (
+	helpers "github.com/proudynyu/clean_arch_go/helpers"
+	protocols "github.com/proudynyu/clean_arch_go/protocols"
+)
 
 type SignUpController struct {
 }
 
-func (s *SignUpController) Handler(request utils.HttpRequest) utils.HttpResponse {
+func (s *SignUpController) Handler(request protocols.HttpRequest) protocols.HttpResponse {
 	if request.Body.Name == "" {
-		return utils.HttpResponse{
-			Status: 400,
-			Msg:    utils.ErrorName,
-		}
+		return helpers.BadRequest("Name")
 	}
 	if request.Body.Email == "" {
-		return utils.HttpResponse{
-			Status: 400,
-			Msg:    utils.ErrorEmail,
-		}
+		return helpers.BadRequest("Email")
 	}
 	if request.Body.Password == "" {
-		return utils.HttpResponse{
-			Status: 400,
-			Msg:    utils.ErrorPassword,
-		}
+		return helpers.BadRequest("Password")
 	}
 	if request.Body.PasswordConfirmation == "" {
-		return utils.HttpResponse{
-			Status: 400,
-			Msg:    utils.ErrorPasswordConfirmation,
-		}
+		return helpers.BadRequest("PasswordConfirmation")
 	}
-
-	return utils.HttpResponse{}
+	return protocols.HttpResponse{}
 }
 
 func NewSignUpController() *SignUpController {

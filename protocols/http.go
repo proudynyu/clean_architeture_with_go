@@ -1,4 +1,4 @@
-package utils
+package protocols
 
 type HttpBody struct {
 	Name                 string

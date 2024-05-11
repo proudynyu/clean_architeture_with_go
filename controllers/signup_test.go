@@ -1,18 +1,20 @@
 package controllers_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	controllers "github.com/proudynyu/clean_arch_go/controllers"
-	utils "github.com/proudynyu/clean_arch_go/utils"
+	"github.com/proudynyu/clean_arch_go/helpers"
+	protocols "github.com/proudynyu/clean_arch_go/protocols"
 )
 
 func Test_ShouldReturn400IfNoNameIsPassed(t *testing.T) {
 	sut := controllers.NewSignUpController()
 
-	httpRequest := utils.HttpRequest{
-		Body: utils.HttpBody{
+	httpRequest := protocols.HttpRequest{
+		Body: protocols.HttpBody{
 			Name:                 "",
 			Email:                "igor@doe.com",
 			Password:             "123",
@@ -22,15 +24,16 @@ func Test_ShouldReturn400IfNoNameIsPassed(t *testing.T) {
 
 	response := sut.Handler(httpRequest)
 
-	assert.Equal(t, response.Status, 400)
-	assert.Equal(t, response.Msg, utils.ErrorName)
+	e := helpers.BadRequest("Name")
+	assert.Equal(t, response.Status, e.Status)
+	assert.Equal(t, response.Msg, e.Msg)
 }
 
 func Test_ShouldReturn400IfNoEmailIsPassed(t *testing.T) {
 	sut := controllers.NewSignUpController()
 
-	httpRequest := utils.HttpRequest{
-		Body: utils.HttpBody{
+	httpRequest := protocols.HttpRequest{
+		Body: protocols.HttpBody{
 			Name:                 "igor",
 			Email:                "",
 			Password:             "123",
@@ -40,15 +43,16 @@ func Test_ShouldReturn400IfNoEmailIsPassed(t *testing.T) {
 
 	response := sut.Handler(httpRequest)
 
-	assert.Equal(t, response.Status, 400)
-	assert.Equal(t, response.Msg, utils.ErrorEmail)
+	e := helpers.BadRequest("Email")
+	assert.Equal(t, response.Status, e.Status)
+	assert.Equal(t, response.Msg, e.Msg)
 }
 
 func Test_ShouldReturn400IfNoPasswordIsPassed(t *testing.T) {
 	sut := controllers.NewSignUpController()
 
-	httpRequest := utils.HttpRequest{
-		Body: utils.HttpBody{
+	httpRequest := protocols.HttpRequest{
+		Body: protocols.HttpBody{
 			Name:                 "igor",
 			Email:                "igor@email.com",
 			Password:             "",
@@ -58,15 +62,16 @@ func Test_ShouldReturn400IfNoPasswordIsPassed(t *testing.T) {
 
 	response := sut.Handler(httpRequest)
 
-	assert.Equal(t, response.Status, 400)
-	assert.Equal(t, response.Msg, utils.ErrorPassword)
+	e := helpers.BadRequest("Password")
+	assert.Equal(t, response.Status, e.Status)
+	assert.Equal(t, response.Msg, e.Msg)
 }
 
 func Test_ShouldReturn400IfNoPasswordConfirmationIsPassed(t *testing.T) {
 	sut := controllers.NewSignUpController()
 
-	httpRequest := utils.HttpRequest{
-		Body: utils.HttpBody{
+	httpRequest := protocols.HttpRequest{
+		Body: protocols.HttpBody{
 			Name:                 "igor",
 			Email:                "igor@email.com",
 			Password:             "password",
@@ -76,6 +81,7 @@ func Test_ShouldReturn400IfNoPasswordConfirmationIsPassed(t *testing.T) {
 
 	response := sut.Handler(httpRequest)
 
-	assert.Equal(t, response.Status, 400)
-	assert.Equal(t, response.Msg, utils.ErrorPasswordConfirmation)
+	e := helpers.BadRequest("PasswordConfirmation")
+	assert.Equal(t, response.Status, e.Status)
+	assert.Equal(t, response.Msg, e.Msg)
 }
