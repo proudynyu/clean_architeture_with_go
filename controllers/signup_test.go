@@ -10,8 +10,27 @@ import (
 	protocols "github.com/proudynyu/clean_arch_go/protocols"
 )
 
+var emailValidatorReturn bool = true
+
+type EmailValidatorStub struct{}
+
+func (e *EmailValidatorStub) IsValid(email string) bool {
+	return emailValidatorReturn
+}
+
+func NewEmailValidatorStub() *EmailValidatorStub {
+	return &EmailValidatorStub{}
+}
+
+func makeSut() *controllers.SignUpController {
+	emailValidator := NewEmailValidatorStub()
+	sut := controllers.NewSignUpController(emailValidator)
+
+	return sut
+}
+
 func Test_ShouldReturn400IfNoNameIsPassed(t *testing.T) {
-	sut := controllers.NewSignUpController()
+	sut := makeSut()
 
 	httpRequest := protocols.HttpRequest{
 		Body: protocols.HttpBody{
@@ -30,7 +49,7 @@ func Test_ShouldReturn400IfNoNameIsPassed(t *testing.T) {
 }
 
 func Test_ShouldReturn400IfNoEmailIsPassed(t *testing.T) {
-	sut := controllers.NewSignUpController()
+	sut := makeSut()
 
 	httpRequest := protocols.HttpRequest{
 		Body: protocols.HttpBody{
@@ -49,7 +68,7 @@ func Test_ShouldReturn400IfNoEmailIsPassed(t *testing.T) {
 }
 
 func Test_ShouldReturn400IfNoPasswordIsPassed(t *testing.T) {
-	sut := controllers.NewSignUpController()
+	sut := makeSut()
 
 	httpRequest := protocols.HttpRequest{
 		Body: protocols.HttpBody{
@@ -68,7 +87,7 @@ func Test_ShouldReturn400IfNoPasswordIsPassed(t *testing.T) {
 }
 
 func Test_ShouldReturn400IfNoPasswordConfirmationIsPassed(t *testing.T) {
-	sut := controllers.NewSignUpController()
+	sut := makeSut()
 
 	httpRequest := protocols.HttpRequest{
 		Body: protocols.HttpBody{
@@ -82,6 +101,26 @@ func Test_ShouldReturn400IfNoPasswordConfirmationIsPassed(t *testing.T) {
 	response := sut.Handler(httpRequest)
 
 	e := helpers.BadRequest("PasswordConfirmation")
+	assert.Equal(t, response.Status, e.Status)
+	assert.Equal(t, response.Msg, e.Msg)
+}
+
+func Test_ShouldReturn400IfEmailPassedIsNotValid(t *testing.T) {
+	sut := makeSut()
+	emailValidatorReturn = false
+
+	httpRequest := protocols.HttpRequest{
+		Body: protocols.HttpBody{
+			Name:                 "igor",
+			Email:                "igor@email.com",
+			Password:             "password",
+			PasswordConfirmation: "password",
+		},
+	}
+
+	response := sut.Handler(httpRequest)
+
+	e := helpers.BadRequest("Email")
 	assert.Equal(t, response.Status, e.Status)
 	assert.Equal(t, response.Msg, e.Msg)
 }

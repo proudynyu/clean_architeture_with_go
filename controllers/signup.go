@@ -6,6 +6,7 @@ import (
 )
 
 type SignUpController struct {
+	emailValidator protocols.EmailValidatorInterface
 }
 
 func (s *SignUpController) Handler(request protocols.HttpRequest) protocols.HttpResponse {
@@ -21,9 +22,14 @@ func (s *SignUpController) Handler(request protocols.HttpRequest) protocols.Http
 	if request.Body.PasswordConfirmation == "" {
 		return helpers.BadRequest("PasswordConfirmation")
 	}
+	if !s.emailValidator.IsValid(request.Body.Email) {
+		return helpers.BadRequest("Email")
+	}
 	return protocols.HttpResponse{}
 }
 
-func NewSignUpController() *SignUpController {
-	return &SignUpController{}
+func NewSignUpController(emailValidator protocols.EmailValidatorInterface) *SignUpController {
+	return &SignUpController{
+		emailValidator,
+	}
 }
